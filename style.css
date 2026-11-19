@@ -1,0 +1,950 @@
+:root {
+  --bg-dark: #090b14;
+  --text-light: #f5f5f7;
+  --text-muted: #b8bfd6;
+  --gold-1: #f6d365;
+  --gold-2: #fda085;
+  --gold-bright: #ffe680;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  min-height: 100dvh;
+  background: radial-gradient(circle at top, #151b33 0%, #090b14 70%);
+  color: var(--text-light);
+  font-family: 'Noto Sans Georgian', sans-serif;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow-x: hidden;
+  padding: 18px;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+#particles-canvas {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* გადასვლის ანიმაცია */
+.transition-overlay {
+  position: fixed;
+  inset: 0;
+  background:
+    radial-gradient(circle at 50% 48%, rgba(255, 223, 128, 0.24) 0%, rgba(244, 114, 182, 0.08) 38%, rgba(9, 11, 20, 0.94) 76%);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  opacity: 0;
+  pointer-events: none;
+  z-index: 100;
+  transition: opacity 0.45s ease;
+}
+
+.transition-overlay.show {
+  opacity: 1;
+}
+
+.transition-stage {
+  position: relative;
+  width: 180px;
+  height: 180px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.sparkle-ring {
+  position: absolute;
+  width: 110px;
+  height: 110px;
+  border-radius: 50%;
+  border: 2px solid var(--gold-bright);
+  box-shadow: 0 0 40px var(--gold-1), inset 0 0 25px var(--gold-1);
+  animation: pulseRing 1.05s ease-out infinite;
+}
+
+.sparkle-ring.ring-secondary {
+  width: 82px;
+  height: 82px;
+  border-color: rgba(253, 186, 116, 0.85);
+  box-shadow: 0 0 28px rgba(253, 160, 133, 0.55), inset 0 0 18px rgba(255, 230, 128, 0.4);
+  animation: pulseRingSecondary 1.25s ease-out infinite;
+}
+
+.transition-glint {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: radial-gradient(circle, #ffffff 0%, var(--gold-bright) 55%, transparent 100%);
+  box-shadow: 0 0 24px #fff6c2, 0 0 45px var(--gold-1);
+  animation: glintPulse 0.95s ease-in-out infinite;
+}
+
+.mini-spark {
+  position: absolute;
+  color: var(--gold-bright);
+  text-shadow: 0 0 12px rgba(255, 230, 128, 0.85);
+  opacity: 0;
+  animation: sparkDrift 1.15s ease-out infinite;
+}
+
+.mini-spark.s1 { top: 14px; left: 26px; font-size: 0.95rem; animation-delay: 0.05s; }
+.mini-spark.s2 { top: 20px; right: 24px; font-size: 0.85rem; color: #fbcfe8; animation-delay: 0.22s; }
+.mini-spark.s3 { bottom: 18px; left: 32px; font-size: 0.8rem; color: #fde68a; animation-delay: 0.35s; }
+.mini-spark.s4 { bottom: 14px; right: 28px; font-size: 1rem; animation-delay: 0.15s; }
+
+@keyframes pulseRing {
+  0% { transform: scale(0.5); opacity: 1; }
+  100% { transform: scale(2.2); opacity: 0; }
+}
+
+@keyframes pulseRingSecondary {
+  0% { transform: scale(0.65); opacity: 0.9; }
+  100% { transform: scale(2.55); opacity: 0; }
+}
+
+@keyframes glintPulse {
+  0%, 100% { transform: scale(0.85); opacity: 0.75; }
+  50% { transform: scale(1.25); opacity: 1; }
+}
+
+@keyframes sparkDrift {
+  0% { transform: translate(0, 6px) scale(0.5) rotate(0deg); opacity: 0; }
+  45% { opacity: 1; }
+  100% { transform: translate(0, -14px) scale(1.15) rotate(35deg); opacity: 0; }
+}
+
+.app-container {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  max-width: 540px;
+}
+
+.step {
+  display: none;
+  animation: fadeSlideUp 0.75s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+.step.active {
+  display: block;
+}
+
+@keyframes fadeSlideUp {
+  from { opacity: 0; transform: translateY(24px) scale(0.97); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.step-indicator {
+  text-align: center;
+  font-size: 0.8rem;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: 14px;
+}
+
+/* --- ეკრანი 0: დასაწყისი კითხვა --- */
+.intro-card {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(18px);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 26px;
+  padding: 34px 24px;
+  text-align: center;
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.55);
+}
+
+.badge {
+  display: inline-block;
+  padding: 6px 14px;
+  border-radius: 999px;
+  background: rgba(246, 211, 101, 0.14);
+  border: 1px solid rgba(246, 211, 101, 0.38);
+  color: var(--gold-bright);
+  font-size: 0.76rem;
+  margin-bottom: 20px;
+}
+
+.intro-question {
+  font-family: 'Noto Serif Georgian', serif;
+  font-size: 1.22rem;
+  line-height: 1.72;
+  font-weight: 400;
+  color: #eef1fa;
+  margin-bottom: 28px;
+}
+
+.intro-question span {
+  display: block;
+  margin-top: 14px;
+  font-weight: 700;
+  font-size: 1.42rem;
+  background: linear-gradient(90deg, #ffffff, var(--gold-bright));
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.choice-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  position: relative;
+  min-height: 54px;
+}
+
+.btn,
+.envelope,
+.next-stage-btn,
+.voice-btn,
+.song-btn,
+.final-btn {
+  touch-action: manipulation;
+  user-select: none;
+}
+
+.btn {
+  padding: 14px 28px;
+  border-radius: 999px;
+  font-size: 1rem;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  border: none;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.btn-yes {
+  background: linear-gradient(135deg, #f6d365, #fda085);
+  color: #16130c;
+  box-shadow: 0 10px 28px rgba(246, 211, 101, 0.38);
+}
+
+.btn-yes:active {
+  transform: scale(0.97);
+}
+
+.btn-no {
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--text-muted);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+}
+
+.no-hint {
+  margin-top: 16px;
+  font-size: 0.9rem;
+  color: var(--gold-bright);
+  min-height: 22px;
+}
+
+/* --- საერთო კონვერტის სტილი --- */
+.envelope {
+  position: relative;
+  border-radius: 24px;
+  padding: 54px 24px 34px;
+  text-align: center;
+  cursor: pointer;
+  overflow: hidden;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.envelope:active {
+  transform: scale(0.98);
+}
+
+.env-flap {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 72px;
+  clip-path: polygon(0 0, 50% 100%, 100% 0);
+  opacity: 0.45;
+}
+
+.env-seal {
+  width: 56px;
+  height: 56px;
+  margin: 0 auto 16px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.45rem;
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(8px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
+}
+
+.env-tag {
+  display: inline-block;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  opacity: 0.9;
+  margin-bottom: 10px;
+}
+
+.envelope h2 {
+  font-family: 'Noto Serif Georgian', serif;
+  font-size: 1.28rem;
+  line-height: 1.58;
+  margin-bottom: 14px;
+}
+
+.tap-hint {
+  font-size: 0.85rem;
+  opacity: 0.85;
+  animation: blinkHint 2s infinite;
+}
+
+@keyframes blinkHint {
+  0%, 100% { opacity: 0.55; }
+  50% { opacity: 1; }
+}
+
+/* 1. კონვერტი #1 — ღია ცისფერი / ლურჯი */
+.envelope-sky {
+  background: linear-gradient(145deg, #38bdf8, #0284c7);
+  color: #ffffff;
+  border: 1px solid rgba(186, 230, 253, 0.65);
+  box-shadow: 0 20px 50px rgba(56, 189, 248, 0.35);
+}
+.envelope-sky .env-flap { background: #bae6fd; }
+
+.card-sky {
+  background: linear-gradient(160deg, rgba(14, 116, 144, 0.35), rgba(15, 23, 42, 0.94));
+  border: 1px solid rgba(125, 211, 252, 0.45);
+  box-shadow: 0 25px 60px rgba(2, 132, 199, 0.25);
+}
+
+/* 2. კონვერტი #2 — მბზინავი ოქროსფერი + შუქის ანარეკლი და ნაპერწკლები */
+.envelope-gold {
+  background: linear-gradient(135deg, #bf953f, #fcf6ba, #b38728, #fbf5b7, #aa771c);
+  background-size: 260% 260%;
+  animation: goldShine 3.8s ease infinite;
+  color: #241904;
+  box-shadow: 0 0 48px rgba(252, 246, 186, 0.6), 0 20px 55px rgba(179, 135, 40, 0.48);
+  border: 1px solid #fff8d6;
+}
+
+@keyframes goldShine {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.gold-shimmer {
+  position: absolute;
+  top: -50%;
+  left: -65%;
+  width: 48%;
+  height: 200%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.8), transparent);
+  transform: rotate(25deg);
+  animation: sweepLight 2.6s infinite;
+  pointer-events: none;
+}
+
+.gold-sparkles {
+  position: absolute;
+  top: 14px;
+  right: 18px;
+  font-size: 0.9rem;
+  color: #5c4007;
+  letter-spacing: 4px;
+  animation: sparkleTwinkle 1.8s ease-in-out infinite;
+  pointer-events: none;
+}
+
+@keyframes sparkleTwinkle {
+  0%, 100% { opacity: 0.4; transform: scale(0.95); }
+  50% { opacity: 1; transform: scale(1.1); }
+}
+
+@keyframes sweepLight {
+  0% { left: -65%; }
+  100% { left: 145%; }
+}
+
+.gold-seal {
+  background: rgba(36, 25, 4, 0.16);
+}
+
+.card-gold {
+  background: linear-gradient(165deg, rgba(66, 48, 12, 0.68), rgba(15, 14, 18, 0.96));
+  border: 1px solid rgba(252, 246, 186, 0.6);
+  box-shadow: 0 0 42px rgba(246, 211, 101, 0.24);
+}
+
+/* 3. კონვერტი #3 — ბონუს ბარათი (ღრმა ბორდოსფერი / ოქროსფერი კანტით) */
+.envelope-bonus {
+  background: linear-gradient(145deg, #6b0f2b, #360514);
+  color: #fff1f2;
+  border: 2px solid #e5b84b;
+  box-shadow: 0 0 35px rgba(229, 184, 75, 0.28), 0 20px 55px rgba(107, 15, 43, 0.5);
+}
+.envelope-bonus .env-flap { background: #e5b84b; opacity: 0.25; }
+
+.bonus-seal {
+  border: 1px solid rgba(229, 184, 75, 0.75);
+  box-shadow: 0 0 18px rgba(229, 184, 75, 0.35);
+}
+
+.card-bonus {
+  background: linear-gradient(165deg, rgba(107, 15, 43, 0.36), rgba(13, 10, 18, 0.96));
+  border: 2px solid #e5b84b;
+  box-shadow: 0 0 38px rgba(229, 184, 75, 0.22), 0 25px 65px rgba(107, 15, 43, 0.35);
+}
+
+/* --- გახსნილი ბარათები --- */
+.letter-card {
+  backdrop-filter: blur(18px);
+  border-radius: 26px;
+  padding: 30px 22px;
+  animation: cardReveal 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.hidden {
+  display: none !important;
+}
+
+@keyframes cardReveal {
+  from { opacity: 0; transform: scale(0.93) translateY(16px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+.card-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+.card-icon {
+  font-size: 1.5rem;
+  flex-shrink: 0;
+}
+
+.card-header h3 {
+  font-family: 'Noto Serif Georgian', serif;
+  font-size: 1.18rem;
+  line-height: 1.45;
+  color: #ffffff;
+}
+
+.memory-prose {
+  font-family: 'Noto Serif Georgian', serif;
+  font-size: 1.02rem;
+  line-height: 1.88;
+  color: #e8f4fc;
+}
+
+/* შემდეგ კონვერტზე გადასასვლელი ღილაკი */
+.next-stage-btn {
+  margin-top: 26px;
+  width: 100%;
+  padding: 15px 20px;
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.24);
+  background: rgba(255, 255, 255, 0.11);
+  color: #ffffff;
+  font-family: inherit;
+  font-size: 0.96rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: all 0.25s ease;
+}
+
+.next-stage-btn:active {
+  transform: scale(0.98);
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.next-stage-btn .arrow {
+  font-size: 1.2rem;
+}
+
+/* --- ვოისის ბლოკი და ხმის ტალღების ანიმაცია --- */
+.voice-subtitle {
+  color: #f3e8c8;
+  font-size: 0.94rem;
+  line-height: 1.65;
+  margin-bottom: 20px;
+}
+
+.voice-box {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(252, 246, 186, 0.38);
+  border-radius: 20px;
+  padding: 22px 16px;
+  text-align: center;
+  transition: box-shadow 0.4s ease, border-color 0.4s ease;
+}
+
+.voice-box.playing {
+  box-shadow: 0 0 38px rgba(246, 211, 101, 0.5);
+  border-color: var(--gold-bright);
+}
+
+.voice-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 26px;
+  border-radius: 999px;
+  border: none;
+  background: linear-gradient(135deg, #f6d365, #fda085);
+  color: #1f1706;
+  font-family: inherit;
+  font-weight: 700;
+  font-size: 0.96rem;
+  cursor: pointer;
+  box-shadow: 0 8px 25px rgba(246, 211, 101, 0.35);
+}
+
+.equalizer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 5px;
+  height: 46px;
+  margin: 20px 0 10px;
+}
+
+.equalizer span {
+  width: 5px;
+  height: 10px;
+  border-radius: 99px;
+  background: linear-gradient(to top, #f6d365, #fff6c2);
+  box-shadow: 0 0 8px rgba(255, 230, 128, 0.65);
+  transition: height 0.2s ease;
+}
+
+.voice-box.playing .equalizer span {
+  animation: waveAnim 0.85s ease-in-out infinite;
+}
+
+.voice-box.playing .equalizer span:nth-child(2) { animation-delay: 0.1s; }
+.voice-box.playing .equalizer span:nth-child(3) { animation-delay: 0.25s; }
+.voice-box.playing .equalizer span:nth-child(4) { animation-delay: 0.4s; }
+.voice-box.playing .equalizer span:nth-child(5) { animation-delay: 0.15s; }
+.voice-box.playing .equalizer span:nth-child(6) { animation-delay: 0.35s; }
+.voice-box.playing .equalizer span:nth-child(7) { animation-delay: 0.2s; }
+.voice-box.playing .equalizer span:nth-child(8) { animation-delay: 0.45s; }
+.voice-box.playing .equalizer span:nth-child(9) { animation-delay: 0.12s; }
+.voice-box.playing .equalizer span:nth-child(10) { animation-delay: 0.3s; }
+
+@keyframes waveAnim {
+  0%, 100% { height: 10px; }
+  50% { height: 40px; }
+}
+
+.voice-timer {
+  font-size: 0.85rem;
+  color: #e5d8b0;
+}
+
+/* --- ბონუს ბარათის ტექსტი და სიმღერის ღილაკი --- */
+.main-apology-text {
+  font-family: 'Noto Serif Georgian', serif;
+  font-size: 0.98rem;
+  line-height: 1.86;
+  color: #fff1f2;
+  background: rgba(255, 255, 255, 0.05);
+  padding: 20px 18px;
+  border-radius: 18px;
+  border: 1px solid rgba(229, 184, 75, 0.35);
+  margin-bottom: 22px;
+}
+
+.song-section {
+  text-align: center;
+  padding: 18px 14px;
+  border-radius: 18px;
+  background: rgba(0, 0, 0, 0.32);
+  border: 1px solid rgba(229, 184, 75, 0.45);
+  margin-bottom: 22px;
+}
+
+.song-caption {
+  font-size: 0.9rem;
+  color: #fde68a;
+  margin-bottom: 14px;
+}
+
+.song-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 24px;
+  border-radius: 999px;
+  border: 1.5px solid #f6d365;
+  background: linear-gradient(135deg, #881337, #be123c, #9f1239);
+  color: #fffbeb;
+  font-family: inherit;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 0 24px rgba(229, 184, 75, 0.25), 0 10px 25px rgba(136, 19, 55, 0.45);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.song-btn:active {
+  transform: scale(0.97);
+}
+
+.song-disc {
+  display: inline-block;
+  font-size: 1.25rem;
+}
+
+.song-btn.playing .song-disc {
+  animation: spinDisc 3s linear infinite;
+}
+
+@keyframes spinDisc {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* ფინალური არჩევანის ღილაკები */
+.final-response-box {
+  text-align: center;
+  border-top: 1px solid rgba(229, 184, 75, 0.25);
+  padding-top: 18px;
+}
+
+.final-prompt {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  margin-bottom: 14px;
+}
+
+.final-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.final-btn {
+  padding: 14px 18px;
+  border-radius: 14px;
+  font-family: inherit;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  transition: transform 0.2s ease;
+}
+
+.talk-btn {
+  background: linear-gradient(135deg, #f6d365, #fda085);
+  color: #1a1407;
+}
+
+.time-btn {
+  background: rgba(255, 255, 255, 0.08);
+  color: #f1f5f9;
+  border: 1px solid rgba(229, 184, 75, 0.35);
+}
+
+.final-btn:active {
+  transform: scale(0.98);
+}
+
+.final-feedback {
+  margin-top: 16px;
+  padding: 14px;
+  border-radius: 14px;
+  background: rgba(246, 211, 101, 0.14);
+  border: 1px solid rgba(246, 211, 101, 0.45);
+  color: #fef08a;
+  font-size: 0.9rem;
+  line-height: 1.55;
+}
+
+/* --- არჩევანის ანიმაცია, მაშას სტიკერი და ფინალური გვერდი --- */
+.choice-anim-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 150;
+  background: radial-gradient(circle, rgba(246, 211, 101, 0.28) 0%, rgba(9, 11, 20, 0.95) 75%);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: 24px;
+  animation: fadeInOverlay 0.35s ease forwards;
+}
+
+.choice-anim-overlay.calm-mode {
+  background: radial-gradient(circle, rgba(96, 165, 250, 0.22) 0%, rgba(9, 11, 20, 0.95) 75%);
+}
+
+@keyframes fadeInOverlay {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.choice-burst {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+}
+
+.choice-ring {
+  position: absolute;
+  top: -18px;
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+  border: 2px solid var(--gold-bright);
+  box-shadow: 0 0 36px var(--gold-1), inset 0 0 22px var(--gold-1);
+  animation: joyPulse 1.1s ease-out infinite;
+}
+
+.choice-anim-overlay.calm-mode .choice-ring {
+  border-color: #93c5fd;
+  box-shadow: 0 0 30px rgba(96, 165, 250, 0.55), inset 0 0 18px rgba(96, 165, 250, 0.45);
+}
+
+@keyframes joyPulse {
+  0% { transform: scale(0.65); opacity: 1; }
+  100% { transform: scale(2.1); opacity: 0; }
+}
+
+.choice-anim-icon {
+  font-size: 2.3rem;
+  color: var(--gold-bright);
+  animation: iconFloat 1.1s ease-in-out infinite;
+}
+
+.choice-anim-overlay.calm-mode .choice-anim-icon {
+  color: #bfdbfe;
+}
+
+@keyframes iconFloat {
+  0%, 100% { transform: translateY(0) scale(1); }
+  50% { transform: translateY(-7px) scale(1.12); }
+}
+
+.choice-anim-text {
+  font-family: 'Noto Serif Georgian', serif;
+  font-size: 1.08rem;
+  color: #fff8d6;
+  max-width: 320px;
+  line-height: 1.6;
+}
+
+.joy-screen {
+  position: fixed;
+  inset: 0;
+  z-index: 160;
+  background: radial-gradient(circle at top, #2c1d07 0%, #090b14 74%);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  overflow-y: auto;
+  animation: fadeSlideUp 0.65s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+.joy-screen.calm-screen {
+  background: radial-gradient(circle at top, #132238 0%, #090b14 74%);
+}
+
+.joy-card {
+  width: 100%;
+  max-width: 520px;
+  background: linear-gradient(165deg, rgba(72, 50, 12, 0.58), rgba(14, 13, 20, 0.96));
+  border: 1.5px solid rgba(246, 211, 101, 0.65);
+  box-shadow: 0 0 48px rgba(246, 211, 101, 0.24), 0 25px 60px rgba(0, 0, 0, 0.68);
+  backdrop-filter: blur(18px);
+  border-radius: 26px;
+  padding: 28px 22px;
+  text-align: center;
+}
+
+.joy-screen.calm-screen .joy-card {
+  background: linear-gradient(165deg, rgba(23, 37, 62, 0.65), rgba(11, 15, 25, 0.97));
+  border-color: rgba(147, 197, 253, 0.45);
+  box-shadow: 0 25px 60px rgba(30, 64, 175, 0.25);
+}
+
+/* მაშას სტიკერის სცენა */
+.masha-stage {
+  position: relative;
+  width: 210px;
+  height: 215px;
+  margin: 4px auto 16px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.masha-aura {
+  position: absolute;
+  width: 168px;
+  height: 168px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 230, 128, 0.32) 0%, rgba(251, 113, 133, 0.12) 55%, transparent 75%);
+  animation: auraGlow 2s ease-in-out infinite;
+  pointer-events: none;
+}
+
+.masha-sad .masha-aura {
+  background: radial-gradient(circle, rgba(147, 197, 253, 0.22) 0%, rgba(30, 58, 138, 0.1) 60%, transparent 78%);
+}
+
+@keyframes auraGlow {
+  0%, 100% { transform: scale(0.92); opacity: 0.75; }
+  50% { transform: scale(1.08); opacity: 1; }
+}
+
+.masha-sparkles {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.masha-sparkles .sp {
+  position: absolute;
+  color: var(--gold-bright);
+  text-shadow: 0 0 10px rgba(255, 230, 128, 0.85);
+  animation: mashaSparkPop 1.5s ease-in-out infinite;
+}
+
+.masha-sparkles .sp1 { top: 10px; left: 16px; font-size: 1rem; animation-delay: 0s; }
+.masha-sparkles .sp2 { top: 16px; right: 18px; font-size: 0.9rem; color: #fda4af; animation-delay: 0.35s; }
+.masha-sparkles .sp3 { bottom: 26px; left: 10px; font-size: 0.95rem; color: #fb7185; animation-delay: 0.6s; }
+.masha-sparkles .sp4 { bottom: 22px; right: 12px; font-size: 1rem; animation-delay: 0.2s; }
+
+.masha-sad .masha-sparkles .sp {
+  color: #93c5fd;
+  text-shadow: 0 0 10px rgba(96, 165, 250, 0.65);
+}
+
+@keyframes mashaSparkPop {
+  0%, 100% { transform: scale(0.75) translateY(0); opacity: 0.45; }
+  50% { transform: scale(1.2) translateY(-5px); opacity: 1; }
+}
+
+.masha-svg {
+  position: relative;
+  z-index: 2;
+  overflow: visible;
+}
+
+.masha-hidden-part {
+  display: none;
+}
+
+/* გახარებული მაშა — სიხარულისგან ახტუნავება */
+.masha-happy .masha-svg {
+  animation: mashaJumpJoy 0.78s cubic-bezier(0.34, 1.56, 0.64, 1) infinite;
+}
+
+@keyframes mashaJumpJoy {
+  0%, 100% { transform: translateY(0) scale(1, 1) rotate(0deg); }
+  25% { transform: translateY(-22px) scale(0.97, 1.04) rotate(-2.5deg); }
+  50% { transform: translateY(-26px) scale(0.98, 1.03) rotate(2.5deg); }
+  78% { transform: translateY(3px) scale(1.05, 0.94) rotate(0deg); }
+}
+
+/* მოწყენილი მაშა — ნელი სევდიანი რხევა, ცრემლი და დამჭკნარი ყვავილები */
+.masha-sad .masha-svg {
+  animation: mashaSadSway 2.8s ease-in-out infinite;
+}
+
+@keyframes mashaSadSway {
+  0%, 100% { transform: translateY(2px) rotate(-1.5deg); }
+  50% { transform: translateY(6px) rotate(1.5deg); }
+}
+
+.masha-sad #masha-tear-group {
+  display: block;
+}
+
+#masha-tear {
+  animation: tearDropFall 2.2s ease-in infinite;
+}
+
+@keyframes tearDropFall {
+  0% { transform: translateY(0) scale(0.85); opacity: 0; }
+  20% { opacity: 1; transform: translateY(2px) scale(1); }
+  85% { opacity: 0.95; transform: translateY(22px) scale(1.02); }
+  100% { opacity: 0; transform: translateY(28px) scale(0.8); }
+}
+
+.masha-sad #masha-mouth-happy {
+  display: none;
+}
+
+.masha-sad #masha-mouth-sad {
+  display: block;
+}
+
+.masha-sad #masha-arms-happy {
+  display: none;
+}
+
+.masha-sad #masha-arms-sad {
+  display: block;
+}
+
+.masha-sad #masha-brow-l {
+  transform: rotate(8deg);
+  transform-origin: 99px 95px;
+}
+
+.masha-sad #masha-brow-r {
+  transform: rotate(-8deg);
+  transform-origin: 141px 95px;
+}
+
+.joy-title {
+  font-family: 'Noto Serif Georgian', serif;
+  font-size: 1.32rem;
+  line-height: 1.55;
+  color: #fffbeb;
+  margin-bottom: 12px;
+}
+
+.joy-message {
+  font-family: 'Noto Serif Georgian', serif;
+  font-size: 0.98rem;
+  line-height: 1.84;
+  color: #f3ead0;
+  margin-bottom: 18px;
+}
+
+.joy-copy-box {
+  padding: 14px;
+  border-radius: 14px;
+  background: rgba(246, 211, 101, 0.14);
+  border: 1px solid rgba(246, 211, 101, 0.45);
+  color: #fef08a;
+  font-size: 0.88rem;
+  line-height: 1.55;
+}
+
+.joy-screen.calm-screen .joy-copy-box {
+  background: rgba(96, 165, 250, 0.12);
+  border-color: rgba(147, 197, 253, 0.4);
+  color: #dbeafe;
+}

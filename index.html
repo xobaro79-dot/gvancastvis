@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="ka">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>მხოლოდ შენთვის</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+Georgian:wght@400;600;700&family=Noto+Sans+Georgian:wght@300;400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <canvas id="particles-canvas"></canvas>
+
+  <!-- გადასვლის ანიმაცია -->
+  <div id="transition-overlay" class="transition-overlay">
+    <div class="transition-veil">
+      <div class="transition-halo"></div>
+      <span class="transition-heart">✦</span>
+    </div>
+  </div>
+
+  <main class="app-container">
+
+    <!-- ეკრანი 0: დასაწყისი კითხვა -->
+    <section id="step-0" class="step active">
+      <div class="intro-card">
+        <div class="badge">მხოლოდ შენთვის • ჩემი გულიდან</div>
+        <h1 class="intro-question">
+          ვიცი, რომ ახლა შეიძლება სიტყვები ზედმეტია, მაგრამ ამ პატარა სამყაროში მხოლოდ ჩემი გულწრფელი სათქმელი დავტოვე...
+          <span>მომცემ უფლებას, გაჩვენო?</span>
+        </h1>
+
+        <div class="choice-buttons">
+          <button id="yes-btn" class="btn btn-yes">კი, მაჩვენე ✨</button>
+          <button id="no-btn" class="btn btn-no">არა</button>
+        </div>
+        <p id="no-hint" class="no-hint"></p>
+      </div>
+    </section>
+
+    <!-- ეკრანი 1: კონვერტი #1 (ღია ცისფერი/ლურჯი დიზაინი) -->
+    <section id="step-1" class="step">
+      <div class="step-indicator">ნაბიჯი 1 / 3</div>
+
+      <div id="env-1" class="envelope envelope-sky" onclick="openEnvelope(1)">
+        <div class="env-flap"></div>
+        <div class="env-seal">💙</div>
+        <div class="env-front">
+          <span class="env-tag">კონვერტი #1</span>
+          <h2>პირველი რამ, რაც ყოველთვის შენზე მახსენდება</h2>
+          <p class="tap-hint">შეეხე კონვერტს გასახსნელად</p>
+        </div>
+      </div>
+
+      <div id="card-1" class="letter-card card-sky hidden">
+        <div class="card-header">
+          <span class="card-icon">🌊</span>
+          <h3>პირველი რამ, რაც ყოველთვის შენზე მახსენდება</h3>
+        </div>
+        <div class="card-body">
+          <p class="memory-prose">
+            „პირველი რამ, რაც ყოველთვის შენზე მახსენდება არის შენი ღიმილი, ღიმილი, რომელიც ჩვენი ბოლო შეხვედრის შემდეგ თვალებიდან არ ამომდის, ღიმილი რომელის დანახვითაც ვიგრძენი ის ძლიერი და განუწყვეტელი გრძნობა რასაც ჩემს მიმართ გრძნობ შენი ცის ფერი თვალები რომლის ცქერასაც არაფერი მირჩევნია ამ ქვეყნად, რომელშიც როგორც ანბანს ისე ვკითხულობ შენს პატარა გულში არსებულ გრძნობებს და ბოლოს კი შენი ტუჩები, რომლის გემოც დღემდე არ დამვიწყებია“
+          </p>
+        </div>
+        <button class="next-stage-btn" onclick="goToStep(2)">
+          <span>გახსენი და მოისმინე თუ, როგორ ძლიერ მიყვარხარ</span>
+          <span class="arrow">→</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- ეკრანი 2: კონვერტი #2 (მბზინავი ოქროსფერი კონვერტი + ვოისი) -->
+    <section id="step-2" class="step">
+      <div class="step-indicator">ნაბიჯი 2 / 3 • ოქროს სიურპრიზი</div>
+
+      <div id="env-2" class="envelope envelope-gold" onclick="openEnvelope(2)">
+        <div class="gold-shimmer"></div>
+        <div class="gold-sparkles">✦ ✧ ✦</div>
+        <div class="env-flap"></div>
+        <div class="env-seal gold-seal">👑</div>
+        <div class="env-front">
+          <span class="env-tag">კონვერტი #2</span>
+          <h2>აქ ის არის, რასაც ტექსტი ვერასდროს გადმოსცემს...</h2>
+          <p class="tap-hint">გახსენი შემდეგი კონვერტი აქ სიურპრიზი გელოდება</p>
+        </div>
+      </div>
+
+      <div id="card-2" class="letter-card card-gold hidden">
+        <div class="card-header">
+          <span class="card-icon">🎙️</span>
+          <h3>ჩემი ხმა — მხოლოდ შენთვის</h3>
+        </div>
+        <p class="voice-subtitle">ჩართე ვოისი და მოუსმინე ჩემო პატარა ქალბატონო... ყოველი წამი მხოლოდ შენთვისაა.</p>
+
+        <div class="voice-box" id="voice-box">
+          <button id="voice-play-btn" class="voice-btn" onclick="toggleVoice()">
+            <span id="voice-icon">▶</span>
+            <span id="voice-label">მოუსმინე ჩემს ხმას</span>
+          </button>
+
+          <div class="equalizer" id="equalizer">
+            <span></span><span></span><span></span><span></span><span></span>
+            <span></span><span></span><span></span><span></span><span></span>
+          </div>
+          <div class="voice-timer" id="voice-timer">00:00 / 01:30</div>
+          <audio id="voice-audio" src="voice.mp3" preload="metadata" playsinline></audio>
+        </div>
+
+        <button class="next-stage-btn gold-next" onclick="goToStep(3)">
+          <span>გადადი ბონუს ბარათზე</span>
+          <span class="arrow">→</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- ეკრანი 3: კონვერტი #3 — ბონუს ბარათი (ღრმა ბორდოსფერი/ოქროსფერი კანტით) -->
+    <section id="step-3" class="step">
+      <div class="step-indicator">ფინალი • 3 / 3</div>
+
+      <div id="env-3" class="envelope envelope-bonus" onclick="openEnvelope(3)">
+        <div class="env-flap"></div>
+        <div class="env-seal bonus-seal">💌</div>
+        <div class="env-front">
+          <span class="env-tag">ბონუს ბარათი</span>
+          <h2>ბონუს ბარათი • ბოლო და ყველაზე მთავარი სათქმელი</h2>
+          <p class="tap-hint">შეეხე ბონუს ბარათის გასახსნელად</p>
+        </div>
+      </div>
+
+      <div id="card-3" class="letter-card card-bonus hidden">
+        <div class="card-header">
+          <span class="card-icon">❤️</span>
+          <h3>ბოლო და ყველაზე მთავარი სათქმელი</h3>
+        </div>
+
+        <div class="main-apology-text">
+          „ვიცი, რომ გატკინე და გაგაბრაზე, მაგრამ არ მინდა სიტყვების კორიანტელით თავის მართლება. უბრალოდ მინდა იცოდე, რომ ჩემთვის ძალიან ბევრს ნიშნავ და ყველაზე მეტად სიმშვიდე და სითბო მენატრება ჩვენ შორის. შეიძლება ახლა ჩემი ნახვა ან საუბარი არ გინდა, და მესმის ეს. სწორედ ამიტომ გავაკეთე ეს, რომ ჩემი სათქმელი ბევრი ლაპარაკის გარეშე, ჩემებურად გადმომეცა შენთვის. ჩემთვის ყველაზე მნიშვნელოვანი ადამიანი ხარ და ყველა და ყველაფერზე მეტად მიყვარხარ. მინდა როცა მზად იქნები ვილაპარაკოთ.“
+        </div>
+
+        <!-- საყვარელი სიმღერის ბლოკი (ტექსტის ქვეშ, იმავე ბარათში) -->
+        <div class="song-section">
+          <p class="song-caption">ჩვენი საყვარელი სიმღერა:</p>
+          <button id="song-play-btn" class="song-btn" onclick="toggleSong()">
+            <span class="song-disc" id="song-disc">💿</span>
+            <span id="song-btn-text">ჩართე ჩვენი მელოდია</span>
+          </button>
+          <audio id="fav-song" src="song.mp3" preload="metadata" playsinline></audio>
+        </div>
+
+        <!-- ფინალური არჩევანი -->
+        <div class="final-response-box">
+          <p class="final-prompt">როცა წაიკითხავ და მოუსმენ, აირჩიე პასუხი:</p>
+          <div class="final-actions">
+            <button class="final-btn talk-btn" onclick="chooseFinal('კარგი ხო გაპატიე, ვილაპარაკოთ')">
+              კარგი ხო გაპატიე, ვილაპარაკოთ
+            </button>
+            <button class="final-btn time-btn" onclick="chooseFinal('ჯერ ისევ გაბრაზებულივარ ამიტომ შემეშვი')">
+              ჯერ ისევ გაბრაზებულივარ ამიტომ შემეშვი
+            </button>
+          </div>
+          <div id="final-feedback" class="final-feedback hidden"></div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ანიმაციის გადაფარვა არჩევანის შემდეგ -->
+  <div id="choice-anim-overlay" class="choice-anim-overlay hidden">
+    <div class="choice-burst">
+      <div class="choice-ring"></div>
+      <div id="choice-anim-icon" class="choice-anim-icon">✦</div>
+      <p id="choice-anim-text" class="choice-anim-text"></p>
+    </div>
+  </div>
+
+  <!-- ფინალური გვერდი / ეკრანი (მაშას სტიკერით) -->
+  <section id="joy-screen" class="joy-screen hidden">
+    <div class="joy-card">
+      <div id="joy-badge" class="badge">✨ ყველაზე კარგი ამბავი</div>
+
+      <!-- სტიკერის სცენა -->
+      <div id="masha-stage" class="masha-stage masha-happy">
+        <div class="masha-aura"></div>
+        <div class="masha-sparkles">
+          <span class="sp sp1">✦</span>
+          <span class="sp sp2">✧</span>
+          <span class="sp sp3">♥</span>
+          <span class="sp sp4">✦</span>
+        </div>
+
+        <!-- დეტალური SVG მაშა (სტიკერის სტილი, კონტურით) -->
+        <svg id="masha-svg" class="masha-svg" viewBox="0 0 240 260" width="190" height="206" aria-label="მაშას სტიკერი">
+          <defs>
+            <linearGradient id="headscarfGrad" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stop-color="#ff5c8a" />
+              <stop offset="55%" stop-color="#e11d48" />
+              <stop offset="100%" stop-color="#9f1239" />
+            </linearGradient>
+            <linearGradient id="dressGrad" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#fb7185" />
+              <stop offset="60%" stop-color="#e11d48" />
+              <stop offset="100%" stop-color="#881337" />
+            </linearGradient>
+            <linearGradient id="skinGrad" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#ffe5d0" />
+              <stop offset="100%" stop-color="#f7c5a3" />
+            </linearGradient>
+            <filter id="stickerShadow" x="-20%" y="-20%" width="140%" height="140%">
+              <feDropShadow dx="0" dy="8" stdDeviation="6" flood-color="#000000" flood-opacity="0.45" />
+            </filter>
+          </defs>
+
+          <g filter="url(#stickerShadow)">
+            <!-- თავსაბურავი / კოკოშნიკის ფორმა -->
+            <path d="M52 104 C48 48, 86 24, 120 24 C154 24, 192 48, 188 104 C194 124, 186 144, 172 152 L68 152 C54 144, 46 124, 52 104 Z"
+                  fill="url(#headscarfGrad)" stroke="#3b0712" stroke-width="4.5" stroke-linejoin="round" />
+            <!-- თავსაბურავის შუა ნაკეცი და თეთრი ზოლი -->
+            <path d="M120 26 C112 52, 112 72, 120 88" fill="none" stroke="#881337" stroke-width="3" stroke-linecap="round" />
+            <path d="M64 96 Q120 74 176 96" fill="none" stroke="#fff1f2" stroke-width="3.5" stroke-linecap="round" opacity="0.85" />
+
+            <!-- სახე -->
+            <ellipse cx="120" cy="112" rx="44" ry="38" fill="url(#skinGrad)" stroke="#3b0712" stroke-width="4.2" />
+
+            <!-- თმის კიდეები შუბლთან -->
+            <path d="M80 94 C90 76, 110 74, 120 84 C130 74, 150 76, 160 94 C146 84, 132 84, 120 92 C108 84, 94 84, 80 94 Z"
+                  fill="#7c3f1d" stroke="#3b0712" stroke-width="3" stroke-linejoin="round" />
+
+            <!-- წარბები -->
+            <path id="masha-brow-l" d="M88 97 Q99 90 109 96" fill="none" stroke="#3b0712" stroke-width="3.4" stroke-linecap="round" />
+            <path id="masha-brow-r" d="M131 96 Q141 90 152 97" fill="none" stroke="#3b0712" stroke-width="3.4" stroke-linecap="round" />
+
+            <!-- დიდი თვალები -->
+            <g id="masha-eyes">
+              <ellipse cx="99" cy="110" rx="10.5" ry="11.5" fill="#ffffff" stroke="#3b0712" stroke-width="3.2" />
+              <circle cx="100" cy="111" r="6.8" fill="#2e7d32" />
+              <circle cx="100" cy="111" r="3.6" fill="#111827" />
+              <circle cx="97" cy="107.5" r="2.6" fill="#ffffff" />
+
+              <ellipse cx="141" cy="110" rx="10.5" ry="11.5" fill="#ffffff" stroke="#3b0712" stroke-width="3.2" />
+              <circle cx="140" cy="111" r="6.8" fill="#2e7d32" />
+              <circle cx="140" cy="111" r="3.6" fill="#111827" />
+              <circle cx="137" cy="107.5" r="2.6" fill="#ffffff" />
+            </g>
+
+            <!-- ლოყების ვარდისფერი რუჟი -->
+            <ellipse cx="84" cy="123" rx="7.5" ry="4.5" fill="#fb7185" opacity="0.55" />
+            <ellipse cx="156" cy="123" rx="7.5" ry="4.5" fill="#fb7185" opacity="0.55" />
+
+            <!-- პატარა ცხვირი -->
+            <path d="M119 114 Q116 121 121 122" fill="none" stroke="#3b0712" stroke-width="2.8" stroke-linecap="round" />
+
+            <!-- პირი (გახარებული ღიმილი / მოწყენილი პირი) -->
+            <path id="masha-mouth-happy" d="M106 129 Q120 144 134 129 Z" fill="#be123c" stroke="#3b0712" stroke-width="3" stroke-linejoin="round" />
+            <path id="masha-mouth-sad" class="masha-hidden-part" d="M108 136 Q120 126 132 136" fill="none" stroke="#3b0712" stroke-width="3.2" stroke-linecap="round" />
+
+            <!-- ერთი ცრემლი მარცხენა თვალთან (მოწყენილ რეჟიმში) -->
+            <g id="masha-tear-group" class="masha-hidden-part">
+              <path id="masha-tear" d="M89 121 C89 121, 83 131, 83 135 C83 138.5, 85.7 141, 89 141 C92.3 141, 95 138.5, 95 135 C95 131, 89 121, 89 121 Z"
+                    fill="#60a5fa" stroke="#1d4ed8" stroke-width="2" />
+              <circle cx="87" cy="133" r="1.4" fill="#ffffff" />
+            </g>
+
+            <!-- კისერი და თეთრი ზედატანი -->
+            <rect x="111" y="147" width="18" height="14" rx="5" fill="url(#skinGrad)" stroke="#3b0712" stroke-width="3.5" />
+            <path d="M86 158 L154 158 L160 176 L80 176 Z" fill="#fffbeb" stroke="#3b0712" stroke-width="3.8" stroke-linejoin="round" />
+
+            <!-- სარაფანი / კაბა -->
+            <path d="M82 172 L158 172 L172 224 L68 224 Z" fill="url(#dressGrad)" stroke="#3b0712" stroke-width="4.2" stroke-linejoin="round" />
+            <rect x="83" y="172" width="74" height="10" rx="4" fill="#fda4af" stroke="#3b0712" stroke-width="3" />
+            <line x1="106" y1="184" x2="98" y2="222" stroke="#881337" stroke-width="2.5" stroke-linecap="round" />
+            <line x1="134" y1="184" x2="142" y2="222" stroke="#881337" stroke-width="2.5" stroke-linecap="round" />
+
+            <!-- ხელები (გახარებულზე გაშლილი, მოწყენილზე ჩამოშვებული დამჭკნარი ყვავილებით) -->
+            <g id="masha-arms-happy">
+              <path d="M84 164 C56 154, 42 134, 36 118" fill="none" stroke="url(#skinGrad)" stroke-width="11" stroke-linecap="round" />
+              <path d="M84 164 C56 154, 42 134, 36 118" fill="none" stroke="#3b0712" stroke-width="3.5" stroke-linecap="round" opacity="0.35" />
+              <circle cx="35" cy="115" r="8" fill="url(#skinGrad)" stroke="#3b0712" stroke-width="3.5" />
+
+              <path d="M156 164 C184 154, 198 134, 204 118" fill="none" stroke="url(#skinGrad)" stroke-width="11" stroke-linecap="round" />
+              <circle cx="205" cy="115" r="8" fill="url(#skinGrad)" stroke="#3b0712" stroke-width="3.5" />
+            </g>
+
+            <g id="masha-arms-sad" class="masha-hidden-part">
+              <path d="M84 164 C68 182, 66 202, 72 216" fill="none" stroke="url(#skinGrad)" stroke-width="10.5" stroke-linecap="round" />
+              <circle cx="73" cy="218" r="7.5" fill="url(#skinGrad)" stroke="#3b0712" stroke-width="3.5" />
+
+              <path d="M156 164 C172 182, 174 202, 168 216" fill="none" stroke="url(#skinGrad)" stroke-width="10.5" stroke-linecap="round" />
+              <circle cx="167" cy="218" r="7.5" fill="url(#skinGrad)" stroke="#3b0712" stroke-width="3.5" />
+
+              <!-- დამჭკნარი ყვავილები ხელში -->
+              <g id="wilted-flowers" transform="translate(152, 192)">
+                <path d="M14 26 C10 14, 4 6, -4 2" fill="none" stroke="#6b705c" stroke-width="3.2" stroke-linecap="round" />
+                <path d="M15 26 C18 14, 22 8, 28 5" fill="none" stroke="#6b705c" stroke-width="3.2" stroke-linecap="round" />
+                <path d="M8 14 C1 14, -2 19, 3 22" fill="#a39b8b" stroke="#3f3d37" stroke-width="2" />
+                <g transform="translate(-5, 2) rotate(-28)">
+                  <circle cx="0" cy="0" r="7.5" fill="#b5838d" stroke="#4a2c33" stroke-width="2.2" />
+                  <circle cx="0" cy="0" r="3" fill="#6d597a" />
+                </g>
+                <g transform="translate(29, 5) rotate(24)">
+                  <circle cx="0" cy="0" r="6.8" fill="#9c6644" stroke="#432818" stroke-width="2.2" />
+                  <circle cx="0" cy="0" r="2.6" fill="#582f0e" />
+                </g>
+              </g>
+            </g>
+
+            <!-- ფეხები და ფეხსაცმელები -->
+            <g id="masha-legs">
+              <rect x="93" y="222" width="11" height="18" rx="4" fill="url(#skinGrad)" stroke="#3b0712" stroke-width="3.5" />
+              <rect x="136" y="222" width="11" height="18" rx="4" fill="url(#skinGrad)" stroke="#3b0712" stroke-width="3.5" />
+              <ellipse cx="97" cy="242" rx="12" ry="6.5" fill="#be123c" stroke="#3b0712" stroke-width="3.5" />
+              <ellipse cx="143" cy="242" rx="12" ry="6.5" fill="#be123c" stroke="#3b0712" stroke-width="3.5" />
+            </g>
+          </g>
+        </svg>
+      </div>
+
+      <h2 id="joy-title" class="joy-title"></h2>
+      <p id="joy-message" class="joy-message"></p>
+      <div id="joy-copy-box" class="joy-copy-box"></div>
+      <button class="next-stage-btn" onclick="backToCardFromJoy()">
+        <span>უკან ბარათზე დაბრუნება</span>
+        <span class="arrow">↩</span>
+      </button>
+    </div>
+  </section>
+
+  <script src="script.js"></script>
+</body>
+</html>
